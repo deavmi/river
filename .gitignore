@@ -15,3 +15,4 @@ river-test-*
 *.obj
 *.lst
 dub.selections.json
+libriver.a
