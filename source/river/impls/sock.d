@@ -29,12 +29,6 @@ public class TCPStream : Stream
 
     }
 
-    public override ulong getAvailableBytes()
-    {
-        // TODO: Implement me
-        return 0;
-    }
-
     public override ulong readFully(ref byte[] toArray)
     {
         // TODO: Implement me
@@ -110,11 +104,7 @@ public class TCPStream : Stream
         return 0;
     }
 
-    public override bool hasAvailable()
-    {
-        // TODO: Implement me
-        return true;
-    }
+   
 
     
 }
@@ -132,7 +122,7 @@ unittest
     import river.impls.sock;
 
     // FIXME: Make this randomnly generated
-    string testDomainStr = "/tmp/testdomnain7.sock";
+    string testDomainStr = "/tmp/testdomnain8.sock";
     UnixAddress testDomain = new UnixAddress(testDomainStr);
 
     scope(exit)
