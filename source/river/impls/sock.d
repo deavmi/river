@@ -4,7 +4,7 @@ import river.core;
 
 import std.socket;
 
-public class TCPStream : Stream
+public class SockStream : Stream
 {
     private Socket socket;
 
@@ -169,7 +169,7 @@ unittest
     Socket clientConnection = new Socket(AddressFamily.UNIX, SocketType.STREAM);
     clientConnection.connect(testDomain);
 
-    Stream stream = new TCPStream(clientConnection);
+    Stream stream = new SockStream(clientConnection);
 
     byte[] receivedData;
     receivedData.length = 2;
