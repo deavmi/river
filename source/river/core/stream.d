@@ -1,7 +1,13 @@
-module river.stream;
+module river.core.stream;
 
+/** 
+ * Defines a stream which can be read fro
+ * and written to
+ */
 public interface Stream
 {
+    public void open();
+
     public void close();
 
     public ulong read(ref byte[] toArray);
