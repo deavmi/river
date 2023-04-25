@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/river
+river.so
+river.dylib
+river.dll
+river.a
+river.lib
+river-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
