@@ -60,6 +60,7 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
+        // Receive from the socket `toArray.length`
         // TODO: recv can only read a certain number of max bytes, we should
         // ... decide what to do in such a case
         ptrdiff_t status = socket.receive(toArray, cast(SocketFlags)MSG_WAITALL);
@@ -102,7 +103,7 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
-        // TODO: Implement me
+        // Receive from the socket (at most `toArray.length`)
         ptrdiff_t status = socket.receive(toArray);
 
         // If the remote end closed the connection
@@ -136,7 +137,8 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
-        // TODO: send can only read a certain number of max bytes, we should
+        // Write to the socket `fromArray.length`
+        // TODO: send can only write a certain number of max bytes, we should
         // ... decide what to do in such a case
         ptrdiff_t status = socket.send(fromArray, cast(SocketFlags)MSG_WAITALL);
 
@@ -179,6 +181,7 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
+        // Write to the socket (at most `fromArray.length`)
         // TODO: Implement me
         ptrdiff_t status = socket.send(fromArray);
 
@@ -202,12 +205,15 @@ public class SockStream : Stream
 
 version(unittest)
 {
-    import std.socket;
     import core.thread;
     import std.file;
     import std.stdio : writeln;
 }
 
+/**
+ * Tests using `read(ref byte[])` and `readFully(ref byte[])`
+ * on a `SockStream`
+ */
 unittest
 {
     import river.impls.sock;
