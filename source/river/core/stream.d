@@ -7,11 +7,6 @@ module river.core.stream;
 public interface Stream
 {
     /** 
-     * Closes the stream
-     */
-    public void close();
-
-    /** 
      * Reads bytes from the stream into the provided array
      * and returns without any further waiting, at most the
      * number of bytes read will be the length of the provided
@@ -54,4 +49,9 @@ public interface Stream
      * Returns: the number of bytes written
      */
     public ulong writeFully(ref byte[] fromArray);
+
+    /** 
+     * Closes the stream
+     */
+    public void close();
 }
