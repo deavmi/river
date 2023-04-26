@@ -40,6 +40,10 @@ public class SockStream : Stream
         socket.close();
     }
 
+    /** 
+     * Ensures that the socket is open, if not, then throws an
+     * exception
+     */
     private void openCheck()
     {
         if(!socket.isAlive())
@@ -48,6 +52,14 @@ public class SockStream : Stream
         }
     }
 
+    /** 
+     * Reads bytes from the socket into the provided array
+     * until the array is fully-filled
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read
+     */
     public override ulong readFully(ref byte[] toArray)
     {
         // Ensure the stream is open
@@ -85,6 +97,16 @@ public class SockStream : Stream
         return 0;
     }
 
+    /** 
+     * Reads bytes from the socket into the provided array
+     * and returns without any further waiting, at most the
+     * number of bytes read will be the length of the provided
+     * array, at minimum a single byte
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read
+     */
     public override ulong read(ref byte[] toArray)
     {
         // Ensure the stream is open
