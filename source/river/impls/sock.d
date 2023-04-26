@@ -6,12 +6,16 @@ import std.socket;
 
 public class SockStream : Stream
 {
+    /** 
+     * Underlying socket
+     */
     private Socket socket;
 
     /** 
-     * 
+     * Constructs a new `SockStream` from the provided socket
+     *
      * Params:
-     *   socket = 
+     *   socket = the `Socket` to use as the underlying source/sink
      */
     this(Socket socket)
     {
@@ -24,13 +28,31 @@ public class SockStream : Stream
 
     }
 
+    /** 
+     * Closes the stream
+     */
     public override void close()
     {
+        /* Unblocks any current calls to receive/send and prevents and futher ones */
+        socket.shutdown(SocketShutdown.BOTH);
 
+        /* Closes the connection */
+        socket.close();
+    }
+
+    private void openCheck()
+    {
+        if(!socket.isAlive())
+        {
+            throw new StreamException(StreamError.CLOSED);
+        }
     }
 
     public override ulong readFully(ref byte[] toArray)
     {
+        // Ensure the stream is open
+        openCheck();
+
         // TODO: Implement me
         // TODO: Implement me
         // TODO: recv can only read a certain number of max bytes, we should
@@ -68,15 +90,16 @@ public class SockStream : Stream
 
     public override ulong read(ref byte[] toArray)
     {
-        Result result;
+        // Ensure the stream is open
+        openCheck();
 
         // TODO: Implement me
         ptrdiff_t status = socket.receive(toArray);
 
-        // TODO: Handle closed socket, set status and then throw exception
+        // If the remote end closed the connection
         if(status == 0)
         {
-
+            throw new StreamException(StreamError.CLOSED);
         }
         // TODO: Handle like above, but some custom error message, then throw exception
         else if(status < 0)
@@ -94,12 +117,18 @@ public class SockStream : Stream
 
     public override ulong writeFully(ref byte[] fromoArray)
     {
+        // Ensure the stream is open
+        openCheck();
+
         // TODO: Implement me
         return 0;
     }
 
     public override ulong write(ref byte[] fromArray)
     {
+        // Ensure the stream is open
+        openCheck();
+
         // TODO: Implement me
         return 0;
     }
@@ -170,6 +199,8 @@ unittest
     clientConnection.connect(testDomain);
 
     Stream stream = new SockStream(clientConnection);
+
+    // TODO: The below can technically be mixed-in
 
     byte[] receivedData;
     receivedData.length = 2;
