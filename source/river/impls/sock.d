@@ -123,22 +123,76 @@ public class SockStream : Stream
         }
     }
 
-    public override ulong writeFully(ref byte[] fromoArray)
+    /** 
+     * Writes bytes to the socket from the provided array
+     * until the array has been fully written
+     *
+     * Params:
+     *   fromArray = the buffer to write from
+     * Returns: the number of bytes written
+     */
+    public override ulong writeFully(ref byte[] fromArray)
     {
         // Ensure the stream is open
         openCheck();
 
-        // TODO: Implement me
-        return 0;
+        // TODO: send can only read a certain number of max bytes, we should
+        // ... decide what to do in such a case
+        ptrdiff_t status = socket.send(fromArray, cast(SocketFlags)MSG_WAITALL);
+
+        
+        // On an error
+        if(status < 0)
+        {
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
+        }
+        // If the message was correctly sent
+        else
+        {
+            // TODO: Ensure read count > 0 and count == toArray.length (full amount requested was read)
+            if(status == fromArray.length)
+            {
+
+            }
+            return status;
+        }
     }
 
+    /** 
+     * Writes bytes to the socket from the provided array
+     * and returns without any further waiting, at most the
+     * number of bytes written will be the length of the provided
+     * array, at minimum a single byte.
+     *
+     * Be aware that is the kernsl's internal buffer is full
+     * and if the `Socket` is in blocking mode that this wil
+     * block until space is available to send at most some of
+     * the bytes in `fromArray`.
+     *
+     * Params:
+     *   fromArray = the buffer to write from
+     * Returns: the number of bytes written
+     */
     public override ulong write(ref byte[] fromArray)
     {
         // Ensure the stream is open
         openCheck();
 
         // TODO: Implement me
-        return 0;
+        ptrdiff_t status = socket.send(fromArray);
+
+        // On an error
+        if(status < 0)
+        {
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
+        }
+        // If the message was correctly sent
+        else
+        {
+            return status;
+        }
     }
 
    
