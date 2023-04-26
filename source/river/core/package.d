@@ -1,5 +1,14 @@
+/**
+ * Streams API
+ */
 module river.core;
 
+/**
+ * Streams interface
+ */
 public import river.core.stream : Stream;
-public import river.core.result : Result;
+
+/**
+ * Error handling
+ */
 public import river.core.exceptions : StreamException, StreamError;
