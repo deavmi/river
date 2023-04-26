@@ -64,32 +64,27 @@ public class SockStream : Stream
         // ... decide what to do in such a case
         ptrdiff_t status = socket.receive(toArray, cast(SocketFlags)MSG_WAITALL);
 
-        // TODO: Handle closed socket, set status and then throw exception
+        // If the remote end closed the connection
         if(status == 0)
         {
-
+            throw new StreamException(StreamError.CLOSED);
         }
         // TODO: Handle like above, but some custom error message, then throw exception
         else if(status < 0)
         {
-
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
         }
         // If the message was correctly received
         else
         {
+            // TODO: Ensure read count > 0 and count == toArray.length (full amount requested was read)
             if(status == toArray.length)
             {
 
             }
             return status;
         }
-
-        // TODO: If system does nto support MSG_FULLWAIT?
-
-        // TODO: Ensure read count > 0 and count == toArray.length (full amount requested was read)
-
-
-        return 0;
     }
 
     /** 
