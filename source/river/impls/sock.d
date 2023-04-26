@@ -23,11 +23,6 @@ public class SockStream : Stream
         this.socket = socket;
     }
 
-    public override void open()
-    {
-
-    }
-
     /** 
      * Closes the stream
      */
