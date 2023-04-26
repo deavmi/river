@@ -33,7 +33,25 @@ public interface Stream
      */
     public ulong readFully(ref byte[] toArray);
 
+    /** 
+     * Writes bytes to the stream from the provided array
+     * and returns without any further waiting, at most the
+     * number of bytes written will be the length of the provided
+     * array, at minimum a single byte
+     *
+     * Params:
+     *   fromArray = the buffer to write from
+     * Returns: the number of bytes written
+     */
     public ulong write(ref byte[] fromArray);
 
+    /** 
+     * Writes bytes to the stream from the provided array
+     * until the array has been fully written
+     *
+     * Params:
+     *   fromArray = the buffer to write from
+     * Returns: the number of bytes written
+     */
     public ulong writeFully(ref byte[] fromArray);
 }
