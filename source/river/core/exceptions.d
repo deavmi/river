@@ -4,7 +4,8 @@ public enum StreamError
 {
     OPEN_FAIL,
     CLOSED,
-    READ_REQUEST_TOO_BIG
+    READ_REQUEST_TOO_BIG,
+    OPERATION_FAILED
 }
 
 public class StreamException : Exception

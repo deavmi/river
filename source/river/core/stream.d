@@ -6,8 +6,9 @@ module river.core.stream;
  */
 public interface Stream
 {
-    public void open();
-
+    /** 
+     * Closes the stream
+     */
     public void close();
 
     /** 

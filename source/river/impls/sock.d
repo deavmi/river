@@ -53,11 +53,8 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
-        // TODO: Implement me
-        // TODO: Implement me
         // TODO: recv can only read a certain number of max bytes, we should
         // ... decide what to do in such a case
-        import std.socket : MSG_WAITALL;
         ptrdiff_t status = socket.receive(toArray, cast(SocketFlags)MSG_WAITALL);
 
         // TODO: Handle closed socket, set status and then throw exception
@@ -104,15 +101,14 @@ public class SockStream : Stream
         // TODO: Handle like above, but some custom error message, then throw exception
         else if(status < 0)
         {
-
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
         }
         // If the message was correctly received
         else
         {
             return status;
         }
-
-        return 0;
     }
 
     public override ulong writeFully(ref byte[] fromoArray)
