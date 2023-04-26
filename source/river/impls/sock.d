@@ -1,9 +1,11 @@
 module river.impls.sock;
 
 import river.core;
-
 import std.socket;
 
+/** 
+ * Provides a stream interface to a `Socket` which has 
+ */
 public class SockStream : Stream
 {
     /** 
