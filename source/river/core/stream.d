@@ -36,8 +36,4 @@ public interface Stream
     public ulong write(ref byte[] fromArray);
 
     public ulong writeFully(ref byte[] fromArray);
-
-    // public ulong getAvailableBytes();
-
-    // public bool hasAvailable();
 }
