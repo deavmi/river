@@ -187,7 +187,7 @@ public class SockStream : Stream
         }
     }
 
-   /** 
+    /** 
      * Closes the stream
      */
     public override void close()
