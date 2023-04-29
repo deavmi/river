@@ -4,24 +4,18 @@
 module river.impls.pipe;
 
 import river.core;
-
-import std.stdio : File;
 import std.exception : ErrnoException;
 import std.conv : to;
-// import river.impls.linux;
 
+/** 
+ * Provides a stream interface to a UNIX pipe fd-pair
+ */
 public class PipeStream : Stream
 {
     /** 
      * Pipe endpoints
      */
     private int readEndFd, writeEndFd;
-
-    /** 
-     * Pipe endpoints (attached to File)
-     */
-    private File readEnd, writeEnd;
-    
 
     /** 
      * Constructs a new piped-stream with the file descriptors of the
