@@ -35,7 +35,8 @@ public class PipeStream : Stream
      * Creates a new anonymous pipe and attaches it to a newly created
      * `PipeStream`
      *
-     * Returns: the created `PipeStream`
+     * Returns: the created `PipeStream`, `null` on failure to create
+     * the pipe
      */
     public static PipeStream newPipe()
     {
