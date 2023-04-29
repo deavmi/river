@@ -5,7 +5,7 @@ import river.core;
 /** 
  * Provides a base for streams based on a file descriptor
  */
-public abstract class FDStream : Stream
+public class FDStream : Stream
 {
     /** 
      * Underlying file descriptor
