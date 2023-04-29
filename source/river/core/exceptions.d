@@ -4,11 +4,9 @@ import std.conv : to;
 
 public enum StreamError
 {
-    OPEN_FAIL,
     CLOSED,
     READ_REQUEST_TOO_BIG,
-    OPERATION_FAILED,
-    OPEN_ERROR
+    OPERATION_FAILED
 }
 
 public class StreamException : Exception
