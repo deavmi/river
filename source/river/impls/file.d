@@ -1,3 +1,6 @@
+/** 
+ * `File`-based stream
+ */
 module river.impls.file;
 
 import river.impls.fd : FDStream;

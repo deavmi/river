@@ -1,3 +1,6 @@
+/** 
+ * FD-based stream
+ */
 module river.impls.fd;
 
 import river.core;
