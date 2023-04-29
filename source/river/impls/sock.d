@@ -21,7 +21,6 @@ public class SockStream : Stream
      */
     this(Socket socket)
     {
-        
         this.socket = socket;
     }
 
