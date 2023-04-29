@@ -57,7 +57,6 @@ public class PipeStream : Stream
             {
                 return null;
             }
-
         }
         else
         {
@@ -152,9 +151,24 @@ public class PipeStream : Stream
         }
     }
 
+    /** 
+     * Closes both pipe pairs
+     */
     public override void close()
     {
-        // TODO: Implement me
+        version(Posix)
+        {
+            import core.sys.posix.unistd : close;
+
+            // TODO: Do something with the error code of both calls to `close`
+            close(readEndFd);
+            close(writeEndFd);
+        }
+        else
+        {
+            pragma(msg, "PipeStream: The close() call is not implemented for your platform");
+            static assert(false);
+        }
     }
 
     public override ulong write(byte[] fromArray)
