@@ -6,17 +6,13 @@ module river.impls.pipe;
 import river.core;
 import std.exception : ErrnoException;
 import std.conv : to;
+import river.impls.fd : FDStream;
 
 /** 
  * Provides a stream interface to a UNIX pipe fd-pair
  */
-public class PipeStream : Stream
+public class PipeStream : FDStream
 {
-    /** 
-     * Pipe endpoints
-     */
-    private int readEndFd, writeEndFd;
-
     /** 
      * Constructs a new piped-stream with the file descriptors of the
      * read and write ends provided
@@ -27,8 +23,7 @@ public class PipeStream : Stream
      */
 	this(int readEnd, int writeEnd)
 	{
-       this.readEndFd = readEnd;
-       this.writeEndFd = writeEnd;
+        super(readEnd, writeEnd);
 	}
 
     /** 
