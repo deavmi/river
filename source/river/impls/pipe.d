@@ -11,8 +11,14 @@ import river.impls.fd : FDStream;
 /** 
  * Provides a stream interface to a UNIX pipe fd-pair
  */
-public class PipeStream : FDStream
+public class PipeStream : Stream
 {
+    /** 
+     * Underlying FDStreams for the read and write fds
+     * making up the pipe
+     */
+    private FDStream readStream, writeStream;
+
     /** 
      * Constructs a new piped-stream with the file descriptors of the
      * read and write ends provided
@@ -23,7 +29,8 @@ public class PipeStream : FDStream
      */
 	this(int readEnd, int writeEnd)
 	{
-        super(readEnd, writeEnd);
+        this.readStream = new FDStream(readEnd);
+        this.writeStream = new FDStream(writeEnd);
 	}
 
     /** 
@@ -72,30 +79,7 @@ public class PipeStream : FDStream
      */
     public override ulong read(byte[] toArray)
     {
-        version(Posix)
-        {
-            import core.sys.posix.unistd : read, ssize_t;
-
-            ssize_t status = read(readEndFd, toArray.ptr, toArray.length);
-
-            if(status > 0)
-            {
-                return status;
-            }
-            else if(status == 0)
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
-            }
-            else
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
-            }
-        }
-        else
-        {
-            pragma(msg, "PipeStream: The read() call is not implemented for your platform");
-            static assert(false);
-        }
+        return readStream.read(toArray);
     }
 
     /** 
@@ -108,76 +92,26 @@ public class PipeStream : FDStream
      */
     public override ulong readFully(byte[] toArray)
     {
-        version(Posix)
-        {
-            import core.sys.posix.unistd : read, ssize_t;
-
-            /** 
-            * Perform a read till the number of bytes requested is fulfilled
-            */
-            long totalBytesRequested = toArray.length;
-            long totalBytesGot = 0;
-            while(totalBytesGot < totalBytesRequested)
-            {
-                /* Read remaining bytes into correct offset */
-                ssize_t status = read(readEndFd, toArray.ptr+totalBytesGot, totalBytesRequested-totalBytesGot);
-
-                if(status > 0)
-                {
-                    totalBytesGot += status;
-                }
-                else if(status == 0)
-                {
-                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
-                }
-                else
-                {
-                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
-                }
-            }
-
-            assert(totalBytesGot == totalBytesRequested);
-            return totalBytesGot;
-        }
-        else
-        {
-            pragma(msg, "PipeStream: The readFully() call is not implemented for your platform");
-            static assert(false);
-        }
+        return readStream.readFully(toArray);
     }
 
     public override ulong write(byte[] fromArray)
     {
-        version(Posix)
-        {
-            import core.sys.posix.unistd : write, ssize_t;
-
-            ssize_t status = write(writeEndFd, fromArray.ptr, fromArray.length);
-
-            if(status > 0)
-            {
-                return status;
-            }
-            else if(status == 0)
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status 0");
-            }
-            else
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
-            }
-        }
-        else
-        {
-            pragma(msg, "PipeStream: The write() call is not implemented for your platform");
-            static assert(false);
-        }
+        return writeStream.write(fromArray);
     }
 
     public override ulong writeFully(byte[] fromArray)
     {
-        // TODO: Implement me
-        return 0;
+        return writeStream.writeFully(fromArray);
+    }
+
+    /** 
+     * Closes both pipe pairs
+     */
+    public override void close()
+    {
+        readStream.close();
+        writeStream.close();
     }
 }
 
