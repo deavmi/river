@@ -24,11 +24,6 @@ public class SockStream : Stream
         this.socket = socket;
     }
 
-    public override void open()
-    {
-        // TODO: ENsure that this socket is open in stream mode
-    }
-
     /** 
      * Ensures that the socket is open, if not, then throws an
      * exception

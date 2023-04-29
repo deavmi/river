@@ -7,11 +7,6 @@ module river.core.stream;
 public interface Stream
 {
     /** 
-     * Opens the stream by initializing it
-     */
-    public void open();
-
-    /** 
      * Reads bytes from the stream into the provided array
      * and returns without any further waiting, at most the
      * number of bytes read will be the length of the provided

@@ -62,20 +62,6 @@ public class PipeStream : Stream
         }
     }
 
-    public override void open()
-    {
-        try
-        {
-            this.readEnd.fdopen(readEndFd);
-            this.writeEnd.fdopen(writeEndFd);
-        }
-        catch(ErrnoException fileError)
-        {
-            throw new StreamException(StreamError.OPEN_FAIL, "Errno: "~to!(string)(fileError.errno()));
-        }
-        
-    }
-
     public override ulong read(byte[] toArray)
     {
         version(Posix)
