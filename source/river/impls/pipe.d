@@ -268,7 +268,6 @@ unittest
     writeln(myReceivedData2);
     assert(myReceivedData2 == [42, 80, 99, 100] || myReceivedData2 == [80, 99, 100, 102]);
 
-
-    
-
+    // Close the stream
+    myPipe.close();
 }
