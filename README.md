@@ -3,6 +3,8 @@
 River
 =====
 
+[![D](https://github.com/deavmi/river/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/river/actions/workflows/d.yml)
+
 River provides a base interface describing a so-called _"stream"_ interface, this entails the following methods:
 
 1. `read(byte[] buff)`
