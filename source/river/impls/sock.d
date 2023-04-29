@@ -1,3 +1,6 @@
+/** 
+ * Socket stream
+ */
 module river.impls.sock;
 
 import river.core;

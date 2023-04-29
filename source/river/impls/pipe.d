@@ -1,3 +1,6 @@
+/** 
+ * Pipe-based stream
+ */
 module river.impls.pipe;
 
 import river.core;
