@@ -21,8 +21,13 @@ public class SockStream : Stream
      */
     this(Socket socket)
     {
-        // TODO: ENsure that this socket is open in stream mode
+        
         this.socket = socket;
+    }
+
+    public override void open()
+    {
+        // TODO: ENsure that this socket is open in stream mode
     }
 
     /** 
