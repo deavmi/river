@@ -2,6 +2,9 @@ module river.impls.fd;
 
 import river.core;
 
+// TODO: In future we could make this single fd-based maybe,
+// ... then make Pipe work by having a pair of FDStreams
+
 /** 
  * Provides a base for streams based on file descriptor
  * pairs (a read fd and a write fd; where they can be
