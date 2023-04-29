@@ -31,6 +31,12 @@ public class PipeStream : Stream
        this.writeEndFd = writeEnd;
 	}
 
+    /** 
+     * Creates a new anonymous pipe and attaches it to a newly created
+     * `PipeStream`
+     *
+     * Returns: the created `PipeStream`
+     */
     public static PipeStream newPipe()
     {
         version(Posix)
@@ -59,6 +65,16 @@ public class PipeStream : Stream
         }
     }
 
+    /** 
+     * Reads bytes from the pipe into the provided array
+     * and returns without any further waiting, at most the
+     * number of bytes read will be the length of the provided
+     * array, at minimum a single byte
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read
+     */
     public override ulong read(byte[] toArray)
     {
         version(Posix)
@@ -87,13 +103,14 @@ public class PipeStream : Stream
         }
     }
 
-    // TODO: Look into how we can accomplish full read,
-    // ... may be good to call a helper function for this
-    // ... seeing as this code can apply to a file-backed fd
-    // ... as well
-    // ...
-    // We may be able to use `select` to do the job, that
-    // ... way sleeping correctly
+    /** 
+     * Reads bytes from the pipe into the provided array
+     * until the array is fully-filled
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read
+     */
     public override ulong readFully(byte[] toArray)
     {
         version(Posix)
