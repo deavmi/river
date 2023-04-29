@@ -219,7 +219,7 @@ version(unittest)
  * how it could go either way and how `read(byte[])`
  * and `readFully(byte[])` can be used in such situations
  */
-unittest
+public unittest
 {
     PipeStream myPipe = PipeStream.newPipe();
     assert(myPipe !is null);
