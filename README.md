@@ -11,6 +11,12 @@ River provides a base interface describing a so-called _"stream"_ interface, thi
 2. `readFully(byte[] buff)`
     * Similar to `read(byte[])` except it will block until the number of bytes read is exactly equal to the length of `buff`
     * On any error a `StreamException` is thrown
+3. `write(byte[] buff)`
+    * Writes from the provided buffer, `buff`, at most the number of bytes equal to the length of `buff` and at least 1 byte
+    * On any error a `StreamException` is thrown
+4. `writeFully(byte[] buff)`
+    * Similar to `write(byte[])` except it will block until the number of bytes written is exactly equal to the length of `buff`
+    * On any error a `StreamException` is thrown
 
 ## Implementations
 
