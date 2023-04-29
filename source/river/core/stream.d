@@ -21,7 +21,7 @@ public interface Stream
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
      */
-    public ulong read(ref byte[] toArray);
+    public ulong read(byte[] toArray);
 
     /** 
      * Reads bytes from the stream into the provided array
@@ -31,7 +31,7 @@ public interface Stream
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
      */
-    public ulong readFully(ref byte[] toArray);
+    public ulong readFully(byte[] toArray);
 
     /** 
      * Writes bytes to the stream from the provided array
@@ -43,7 +43,7 @@ public interface Stream
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
      */
-    public ulong write(ref byte[] fromArray);
+    public ulong write(byte[] fromArray);
 
     /** 
      * Writes bytes to the stream from the provided array
@@ -53,7 +53,7 @@ public interface Stream
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
      */
-    public ulong writeFully(ref byte[] fromArray);
+    public ulong writeFully(byte[] fromArray);
 
     /** 
      * Closes the stream

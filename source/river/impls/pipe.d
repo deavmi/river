@@ -77,7 +77,7 @@ public class PipeStream : Stream
         
     }
 
-    public override ulong read(ref byte[] toArray)
+    public override ulong read(byte[] toArray)
     {
         import core.sys.posix.unistd;
 
@@ -91,24 +91,28 @@ public class PipeStream : Stream
         }
     }
 
+    // TODO: Look into how we can accomplish full read,
+    // ... may be good to call a helper function for this
+    // ... seeing as this code can apply to a file-backed fd
+    // ... as well
+    public override ulong readFully(byte[] toArray)
+    {
+        // TODO: Implement me
+        return 0;
+    }
+
     public override void close()
     {
         // TODO: Implement me
     }
 
-    public override ulong readFully(ref byte[] toArray)
+    public override ulong write(byte[] fromArray)
     {
         // TODO: Implement me
         return 0;
     }
 
-    public override ulong write(ref byte[] fromArray)
-    {
-        // TODO: Implement me
-        return 0;
-    }
-
-    public override ulong writeFully(ref byte[] fromArray)
+    public override ulong writeFully(byte[] fromArray)
     {
         // TODO: Implement me
         return 0;

@@ -51,7 +51,7 @@ public class SockStream : Stream
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
      */
-    public override ulong read(ref byte[] toArray)
+    public override ulong read(byte[] toArray)
     {
         // Ensure the stream is open
         openCheck();
@@ -85,7 +85,7 @@ public class SockStream : Stream
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
      */
-    public override ulong readFully(ref byte[] toArray)
+    public override ulong readFully(byte[] toArray)
     {
         // Ensure the stream is open
         openCheck();
@@ -133,7 +133,7 @@ public class SockStream : Stream
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
      */
-    public override ulong write(ref byte[] fromArray)
+    public override ulong write(byte[] fromArray)
     {
         // Ensure the stream is open
         openCheck();
@@ -163,7 +163,7 @@ public class SockStream : Stream
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
      */
-    public override ulong writeFully(ref byte[] fromArray)
+    public override ulong writeFully(byte[] fromArray)
     {
         // Ensure the stream is open
         openCheck();
