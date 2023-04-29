@@ -57,7 +57,7 @@ public abstract class FDStream : Stream
         }
         else
         {
-            pragma(msg, "PipeStream: The read() call is not implemented for your platform");
+            pragma(msg, "FDStream: The read() call is not implemented for your platform");
             static assert(false);
         }
     }
@@ -105,9 +105,43 @@ public abstract class FDStream : Stream
         }
         else
         {
-            pragma(msg, "PipeStream: The readFully() call is not implemented for your platform");
+            pragma(msg, "FDStream: The readFully() call is not implemented for your platform");
             static assert(false);
         }
+    }
+
+    public override ulong write(byte[] fromArray)
+    {
+        version(Posix)
+        {
+            import core.sys.posix.unistd : write, ssize_t;
+
+            ssize_t status = write(fd, fromArray.ptr, fromArray.length);
+
+            if(status > 0)
+            {
+                return status;
+            }
+            else if(status == 0)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status 0");
+            }
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
+            }
+        }
+        else
+        {
+            pragma(msg, "FDStream: The write() call is not implemented for your platform");
+            static assert(false);
+        }
+    }
+
+    public override ulong writeFully(byte[] fromArray)
+    {
+        // TODO: Implement me
+        return 0;
     }
 
     /**
