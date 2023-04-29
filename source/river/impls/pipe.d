@@ -4,8 +4,9 @@ import river.core;
 
 import std.stdio : File;
 import std.exception : ErrnoException;
+import std.conv : to;
 
-public class Pipe : Stream
+public class PipeStream : Stream
 {
     /** 
      * Pipe endpoints
@@ -36,8 +37,8 @@ public class Pipe : Stream
     {
         try
         {
-            this.readEnd.fdopen(readEnd);
-            this.writeEnd.fdopen(writeEnd);
+            this.readEnd.fdopen(readEndFd);
+            this.writeEnd.fdopen(writeEndFd);
         }
         catch(ErrnoException fileError)
         {
@@ -57,4 +58,39 @@ public class Pipe : Stream
             throw new StreamException(StreamError.OPERATION_FAILED, "Errno: "~to!(string)(fileError.errno()));
         }
     }
+
+    public override void close()
+    {
+        // TODO: Implement me
+    }
+
+    public override ulong readFully(ref byte[] toArray)
+    {
+        // TODO: Implement me
+        return 0;
+    }
+
+    public override ulong write(ref byte[] fromArray)
+    {
+        // TODO: Implement me
+        return 0;
+    }
+
+    public override ulong writeFully(ref byte[] fromArray)
+    {
+        // TODO: Implement me
+        return 0;
+    }
+}
+
+unittest
+{
+    import std.stdio;
+    import std.file;
+    import std.process;
+    // Pipe createdPipe = pipe();
+    // int pipeRead = createdPipe.readEnd().fileno(), pipeWrite = createdPipe.readEnd().fileno();
+    
+    import core.stdc.stdio;
+
 }
