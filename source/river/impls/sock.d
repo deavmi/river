@@ -221,7 +221,7 @@ unittest
     import river.impls.sock;
 
     // FIXME: Make this randomnly generated
-    string testDomainStr = "/tmp/testdomnain8.sock";
+    string testDomainStr = "/tmp/riverTestUNIXSock.sock";
     UnixAddress testDomain = new UnixAddress(testDomainStr);
 
     scope(exit)
