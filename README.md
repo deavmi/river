@@ -17,6 +17,11 @@ River provides a base interface describing a so-called _"stream"_ interface, thi
 4. `writeFully(byte[] buff)`
     * Similar to `write(byte[])` except it will block until the number of bytes written is exactly equal to the length of `buff`
     * On any error a `StreamException` is thrown
+5. `close()`
+    * Closes the stream
+    * On any error a `StreamException` is thrown
+
+Checkout the [Streams API](https://river.dpldocs.info/river.core.html).
 
 ## Implementations
 
