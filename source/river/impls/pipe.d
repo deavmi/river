@@ -150,7 +150,8 @@ public class PipeStream : Stream
 
 
         // TODO: Implement me
-        return 0;
+        assert(totalBytesGot == totalBytesRequested);
+        return totalBytesGot;
     }
 
     public override void close()
@@ -216,6 +217,16 @@ unittest
         {
             byte[] data = [0,69,55];
             myPipeStream.write(data);
+
+            Thread.sleep(dur!("seconds")(2));
+
+            data = [42, 80, 99];
+            myPipeStream.write(data);
+
+            Thread.sleep(dur!("seconds")(2));
+
+            data = [100, 102];
+            myPipeStream.write(data);
         }
     }
 
@@ -223,6 +234,28 @@ unittest
     Thread writerThread = new WriterThread(myPipe);
     writerThread.start();
 
+    Thread.sleep(dur!("seconds")(2));
 
+    byte[] myReceivedData;
+    myReceivedData.length = 4;
+    ulong cnt = myPipe.read(myReceivedData);
+    assert(cnt == 3 || cnt == 4);
+    assert(myReceivedData == [0, 69,55, 0] || myReceivedData == [0, 69,55, 42]);
+
+
+    // By now either [42, 80, 99, 100, 102] or [80, 99, 100, 102]
+
+    byte[] myReceivedData2;
+    myReceivedData2.length = 4;
+    cnt = myPipe.readFully(myReceivedData2);
+    import std.stdio;
+    writeln(cnt);
+    assert(cnt == 4);
+    import std.stdio;
+    writeln(myReceivedData2);
+    assert(myReceivedData2 == [42, 80, 99, 100] || myReceivedData2 == [80, 99, 100, 102]);
+
+
+    
 
 }
