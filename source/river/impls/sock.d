@@ -286,6 +286,7 @@ unittest
 
 
     // server.close();
+    stream.close();
 
     
 }
