@@ -1,3 +1,6 @@
+/**
+ * Streams interface
+ */
 module river.core.stream;
 
 /** 
