@@ -5,6 +5,7 @@ import river.core;
 import std.stdio : File;
 import std.exception : ErrnoException;
 import std.conv : to;
+// import river.impls.linux;
 
 public class PipeStream : Stream
 {
@@ -35,15 +36,15 @@ public class PipeStream : Stream
 
     public static PipeStream newPipe()
     {
-        version(Linux)
+        version(Posix)
         {
             import core.sys.posix.unistd : pipe;
 
             /* Open the pipe */
-            int[] pipeFd;
+            int[2] pipeFd;
 
             // Successful pipe creation
-            if(pipe(pipeFd))
+            if(pipe(pipeFd) == 0)
             {
                 return new PipeStream(pipeFd[0], pipeFd[1]);
             }
@@ -52,12 +53,11 @@ public class PipeStream : Stream
             {
                 return null;
             }
-            pragma(msg, "Naai");
+
         }
-        // TODO: FIx, Idk why this below static else is running
         else
         {
-            pragma(msg, "Cannot use newPipe() on platforms other than Linux");
+            pragma(msg, "Cannot use newPipe() on platforms other than Posix");
             // static assert(false);
             return null;
         }
@@ -79,15 +79,35 @@ public class PipeStream : Stream
 
     public override ulong read(byte[] toArray)
     {
-        import core.sys.posix.unistd;
+        version(Posix)
+        {
+            import core.sys.posix.unistd : read, ssize_t;
 
-        try
-        {
-            return readEnd.rawRead(toArray).length;
+            ssize_t status = read(readEndFd, toArray.ptr, toArray.length);
+
+            if(status > 0)
+            {
+                return status;
+            }
+            else if(status == 0)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
+            }
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
+            }
         }
-        catch(ErrnoException fileError)
+        else
         {
-            throw new StreamException(StreamError.OPERATION_FAILED, "Errno: "~to!(string)(fileError.errno()));
+            try
+            {
+                return readEnd.rawRead(toArray).length;
+            }
+            catch(ErrnoException fileError)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Errno: "~to!(string)(fileError.errno()));
+            }
         }
     }
 
@@ -95,8 +115,40 @@ public class PipeStream : Stream
     // ... may be good to call a helper function for this
     // ... seeing as this code can apply to a file-backed fd
     // ... as well
+    // ...
+    // We may be able to use `select` to do the job, that
+    // ... way sleeping correctly
     public override ulong readFully(byte[] toArray)
     {
+        import core.sys.posix.unistd : read, ssize_t;
+
+        /** 
+         * Perform a read till the number of bytes requested is fulfilled
+         */
+        long totalBytesRequested = toArray.length;
+        long totalBytesGot = 0;
+        while(totalBytesGot < totalBytesRequested)
+        {
+            /* Read remaining bytes into correct offset */
+            ssize_t status = read(readEndFd, toArray.ptr+totalBytesGot, totalBytesRequested-totalBytesGot);
+
+            if(status > 0)
+            {
+                totalBytesGot += status;
+            }
+            else if(status == 0)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
+            }
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
+            }
+        }
+
+       
+
+
         // TODO: Implement me
         return 0;
     }
@@ -109,7 +161,28 @@ public class PipeStream : Stream
     public override ulong write(byte[] fromArray)
     {
         // TODO: Implement me
-        return 0;
+
+        version(Posix)
+        {
+            import core.sys.posix.unistd : write, ssize_t;
+
+            ssize_t status = write(writeEndFd, fromArray.ptr, fromArray.length);
+
+            if(status > 0)
+            {
+                return status;
+            }
+            else if(status == 0)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status 0");
+            }
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
+            }
+        }
+
+        // return 0;
     }
 
     public override ulong writeFully(byte[] fromArray)
@@ -119,14 +192,37 @@ public class PipeStream : Stream
     }
 }
 
+version(unittest)
+{
+    import core.thread;
+}
+
 unittest
 {
-    import std.stdio;
-    import std.file;
-    import std.process;
-    // Pipe createdPipe = pipe();
-    // int pipeRead = createdPipe.readEnd().fileno(), pipeWrite = createdPipe.readEnd().fileno();
-    
-    import core.stdc.stdio;
+    PipeStream myPipe = PipeStream.newPipe();
+    assert(myPipe !is null);
+
+    class WriterThread : Thread
+    {
+        private PipeStream myPipeStream;
+
+        this(PipeStream myPipeStream)
+        {
+            this.myPipeStream = myPipeStream;
+            super(&run);
+        }
+
+        private void run()
+        {
+            byte[] data = [0,69,55];
+            myPipeStream.write(data);
+        }
+    }
+
+
+    Thread writerThread = new WriterThread(myPipe);
+    writerThread.start();
+
+
 
 }
