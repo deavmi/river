@@ -1,3 +1,6 @@
+/** 
+ * Error handling
+ */
 module river.core.exceptions;
 
 import std.conv : to;
