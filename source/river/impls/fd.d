@@ -2,34 +2,15 @@ module river.impls.fd;
 
 import river.core;
 
-// TODO: In future we could make this single fd-based maybe,
-// ... then make Pipe work by having a pair of FDStreams
-
 /** 
- * Provides a base for streams based on file descriptor
- * pairs (a read fd and a write fd; where they can be
- * the same fd)
+ * Provides a base for streams based on a file descriptor
  */
 public abstract class FDStream : Stream
 {
     /** 
-     * Read/Write file descriptors
+     * Underlying file descriptor
      */
-    protected const int readEndFd, writeEndFd;
-
-    /** 
-     * Creates a new `FDStream` with the given read and write
-     * file descriptors (they may be the same)
-     *
-     * Params:
-     *   readEndFd = the file descriptor to read from
-     *   writeEndFd = the file descriptor to write to
-     */
-    this(int readEndFd, int writeEndFd)
-    {
-        this.readEndFd = readEndFd;
-        this.writeEndFd = writeEndFd;
-    }
+    protected const int fd;
 
     /** 
      * Creates a new `FDStream` with the backing read/write file
@@ -40,11 +21,11 @@ public abstract class FDStream : Stream
      */
     this(int fd)
     {
-        this(fd, fd);
+        this.fd = fd;
     }
 
     /**
-     * Closes the file descriptors
+     * Closes the file descriptor
      */
     public override void close()
     {
@@ -53,15 +34,7 @@ public abstract class FDStream : Stream
             import core.sys.posix.unistd : close;
 
             // TODO: Do something with the error code of both calls to `close`
-            if(readEndFd == writeEndFd)
-            {
-                close(readEndFd);
-            }
-            else
-            {
-                close(readEndFd);
-                close(writeEndFd);
-            } 
+            close(fd);
         }
         else
         {
