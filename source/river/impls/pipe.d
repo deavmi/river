@@ -211,6 +211,14 @@ version(unittest)
     import core.thread;
 }
 
+/**
+ * Create a new `PipeStream` where one thread writes to it
+ * and another thread (the main thread) reads from it.
+ *
+ * We have added in some pauses to add entropy to show
+ * how it could go either way and how `read(byte[])`
+ * and `readFully(byte[])` can be used in such situations
+ */
 unittest
 {
     PipeStream myPipe = PipeStream.newPipe();
@@ -242,7 +250,6 @@ unittest
             myPipeStream.write(data);
         }
     }
-
 
     Thread writerThread = new WriterThread(myPipe);
     writerThread.start();
