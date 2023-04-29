@@ -10,7 +10,13 @@ public class Pipe : Stream
     /** 
      * Pipe endpoints
      */
+    private int readEndFd, writeEndFd;
+
+    /** 
+     * Pipe endpoints (attached to File)
+     */
     private File readEnd, writeEnd;
+    
 
     /** 
      * Constructs a new piped-stream with the file descriptors of the
@@ -22,9 +28,23 @@ public class Pipe : Stream
      */
 	this(int readEnd, int writeEnd)
 	{
-        this.readEnd.fdopen(readEnd);
-        this.writeEnd.fdopen(writeEnd);
+       this.readEndFd = readEnd;
+       this.writeEndFd = writeEnd;
 	}
+
+    public override void open()
+    {
+        try
+        {
+            this.readEnd.fdopen(readEnd);
+            this.writeEnd.fdopen(writeEnd);
+        }
+        catch(ErrnoException fileError)
+        {
+            throw new StreamException(StreamError.OPEN_FAIL, "Errno: "~to!(string)(fileError.errno()));
+        }
+        
+    }
 
     public override ulong read(ref byte[] toArray)
     {
@@ -34,7 +54,7 @@ public class Pipe : Stream
         }
         catch(ErrnoException fileError)
         {
-            throw new StreamException(StreamError.OPERATION_FAILED);
+            throw new StreamException(StreamError.OPERATION_FAILED, "Errno: "~to!(string)(fileError.errno()));
         }
     }
 }
