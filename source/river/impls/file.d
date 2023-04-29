@@ -11,8 +11,19 @@ import std.stdio : File;
  */
 public class FileStream : FDStream
 {
+    /** 
+     * Constructs a new file stream on the provided file
+     *
+     * Params:
+     *   file = the `File` to use
+     */
     this(File file)
     {
         super(file.fileno());
     }
+}
+
+unittest
+{
+    // TODO: Open a file here
 }
