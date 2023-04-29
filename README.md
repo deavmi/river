@@ -22,3 +22,5 @@ To go along with the streams API we also offer a few implementations of useful s
 2. [PipeStream](https://river.dpldocs.info/river.impls.pipe.PipeStream.html)
     * Prvodes a streamable access to a pipe pair of file descriptors
     * Note, only supports POSIX-like systems to far
+
+... see [the rest](https://river.dpldocs.info/river.impls.html);
