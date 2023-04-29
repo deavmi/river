@@ -15,7 +15,7 @@ public abstract class FDStream : Stream
     protected const int readEndFd, writeEndFd;
 
     /** 
-     * Creates a new FDStream with the given read and write
+     * Creates a new `FDStream` with the given read and write
      * file descriptors (they may be the same)
      *
      * Params:
@@ -26,6 +26,18 @@ public abstract class FDStream : Stream
     {
         this.readEndFd = readEndFd;
         this.writeEndFd = writeEndFd;
+    }
+
+    /** 
+     * Creates a new `FDStream` with the backing read/write file
+     * descriptor being the one provided
+     *
+     * Params:
+     *   fd = the read/write file descriptor
+     */
+    this(int fd)
+    {
+        this(fd, fd);
     }
 
     /**
