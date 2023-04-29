@@ -23,10 +23,23 @@ public enum StreamError
     OPERATION_FAILED
 }
 
+/** 
+ * Used for any operations on streams whenever an error occurs
+ */
 public class StreamException : Exception
 {
+    /** 
+     * The type of error
+     */
     private StreamError error;
     
+    /** 
+     * Constructs a new `StreamException` of the given sub-error type
+     * and allows an optional message to go along with it
+     *
+     * Params:
+     *   error = the `StreamError` describing the kind of error
+     */
     this(StreamError error, string msg = "")
     {
         string helperMessage = msg.length ? msg : "No further information available";
@@ -34,6 +47,11 @@ public class StreamException : Exception
         this.error = error;
     }
 
+    /** 
+     * Returns the type of error that occurred
+     *
+     * Returns: the error as a `StreamError`
+     */
     public StreamError getError()
     {
         return error;
