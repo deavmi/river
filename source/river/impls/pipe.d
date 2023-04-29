@@ -33,6 +33,36 @@ public class PipeStream : Stream
        this.writeEndFd = writeEnd;
 	}
 
+    public static PipeStream newPipe()
+    {
+        version(Linux)
+        {
+            import core.sys.posix.unistd : pipe;
+
+            /* Open the pipe */
+            int[] pipeFd;
+
+            // Successful pipe creation
+            if(pipe(pipeFd))
+            {
+                return new PipeStream(pipeFd[0], pipeFd[1]);
+            }
+            // Failure to create a pipe
+            else
+            {
+                return null;
+            }
+            pragma(msg, "Naai");
+        }
+        // TODO: FIx, Idk why this below static else is running
+        else
+        {
+            pragma(msg, "Cannot use newPipe() on platforms other than Linux");
+            // static assert(false);
+            return null;
+        }
+    }
+
     public override void open()
     {
         try
@@ -49,6 +79,8 @@ public class PipeStream : Stream
 
     public override ulong read(ref byte[] toArray)
     {
+        import core.sys.posix.unistd;
+
         try
         {
             return readEnd.rawRead(toArray).length;
