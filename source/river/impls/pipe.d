@@ -57,9 +57,8 @@ public class PipeStream : Stream
         }
         else
         {
-            pragma(msg, "Cannot use newPipe() on platforms other than Posix");
-            // static assert(false);
-            return null;
+            pragma(msg, "PipeStream: Cannot construct pipes on this platform");
+            static assert(false);
         }
     }
 
@@ -100,14 +99,8 @@ public class PipeStream : Stream
         }
         else
         {
-            try
-            {
-                return readEnd.rawRead(toArray).length;
-            }
-            catch(ErrnoException fileError)
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Errno: "~to!(string)(fileError.errno()));
-            }
+            pragma(msg, "PipeStream: The read() call is not implemented for your platform");
+            static assert(false);
         }
     }
 
@@ -120,38 +113,42 @@ public class PipeStream : Stream
     // ... way sleeping correctly
     public override ulong readFully(byte[] toArray)
     {
-        import core.sys.posix.unistd : read, ssize_t;
-
-        /** 
-         * Perform a read till the number of bytes requested is fulfilled
-         */
-        long totalBytesRequested = toArray.length;
-        long totalBytesGot = 0;
-        while(totalBytesGot < totalBytesRequested)
+        version(Posix)
         {
-            /* Read remaining bytes into correct offset */
-            ssize_t status = read(readEndFd, toArray.ptr+totalBytesGot, totalBytesRequested-totalBytesGot);
+            import core.sys.posix.unistd : read, ssize_t;
 
-            if(status > 0)
+            /** 
+            * Perform a read till the number of bytes requested is fulfilled
+            */
+            long totalBytesRequested = toArray.length;
+            long totalBytesGot = 0;
+            while(totalBytesGot < totalBytesRequested)
             {
-                totalBytesGot += status;
+                /* Read remaining bytes into correct offset */
+                ssize_t status = read(readEndFd, toArray.ptr+totalBytesGot, totalBytesRequested-totalBytesGot);
+
+                if(status > 0)
+                {
+                    totalBytesGot += status;
+                }
+                else if(status == 0)
+                {
+                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
+                }
+                else
+                {
+                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
+                }
             }
-            else if(status == 0)
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status 0");
-            }
-            else
-            {
-                throw new StreamException(StreamError.OPERATION_FAILED, "Could not read, status <0");
-            }
+
+            assert(totalBytesGot == totalBytesRequested);
+            return totalBytesGot;
         }
-
-       
-
-
-        // TODO: Implement me
-        assert(totalBytesGot == totalBytesRequested);
-        return totalBytesGot;
+        else
+        {
+            pragma(msg, "PipeStream: The readFully() call is not implemented for your platform");
+            static assert(false);
+        }
     }
 
     public override void close()
@@ -161,8 +158,6 @@ public class PipeStream : Stream
 
     public override ulong write(byte[] fromArray)
     {
-        // TODO: Implement me
-
         version(Posix)
         {
             import core.sys.posix.unistd : write, ssize_t;
@@ -182,8 +177,11 @@ public class PipeStream : Stream
                 throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
             }
         }
-
-        // return 0;
+        else
+        {
+            pragma(msg, "PipeStream: The write() call is not implemented for your platform");
+            static assert(false);
+        }
     }
 
     public override ulong writeFully(byte[] fromArray)
