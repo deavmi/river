@@ -284,9 +284,6 @@ unittest
     assert(receivedData2 == [21, 0, 0] || receivedData2 == [21, 1, 0] || receivedData2 == [21, 1, 2]);
 
 
-
-    // server.close();
+    // Finally close the stream
     stream.close();
-
-    
 }
