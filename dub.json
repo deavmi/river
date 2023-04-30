@@ -2,7 +2,7 @@
 	"authors": [
 		"Tristan B. Velloza Kildaire"
 	],
-	"copyright": "Copyright © 2023, Tristan B. Velloza Kildaire",
+	"copyright": "Copyright © 2023, Tristan B. Kildaire",
 	"description": "Streams interface",
 	"license": "LGPL 2",
 	"name": "river",
