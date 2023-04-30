@@ -143,7 +143,7 @@ public class FDStream : Stream
 
     public override ulong writeFully(byte[] fromArray)
     {
-        // TODO: Implement me
+        // TODO: Implement me, use the code that readFully uses but for writing
         return 0;
     }
 
