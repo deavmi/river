@@ -171,6 +171,9 @@ public class SockStream : Stream
         // ... decide what to do in such a case
         ptrdiff_t status = socket.send(fromArray, cast(SocketFlags)MSG_WAITALL);
 
+        // TODO: See is waitall even works, maybe it doesn't, we shall have to see,
+        // ... else use write calls and do what we do in readFully for fdstream for inspiration
+
         
         // On an error
         if(status < 0)
