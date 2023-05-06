@@ -193,7 +193,7 @@ public class FDStream : Stream
         {
             import core.sys.posix.unistd : close;
 
-            // TODO: Do something with the error code of both calls to `close`
+            /* Close the file descriptor */
             close(fd);
         }
         else
