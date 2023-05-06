@@ -143,8 +143,45 @@ public class FDStream : Stream
 
     public override ulong writeFully(byte[] fromArray)
     {
+        // TODO: Add a unit test for this, we should do it in something that
+        // ... has a fixed internal buffer
         // TODO: Implement me, use the code that readFully uses but for writing
-        return 0;
+        version(Posix)
+        {
+            import core.sys.posix.unistd : write, ssize_t;
+
+            /** 
+            * Perform a write till the number of bytes requested is fulfilled
+            */
+            long totalBytesRequested = fromArray.length;
+            long totalBytesGot = 0;
+            while(totalBytesGot < totalBytesRequested)
+            {
+                /* Write remaining bytes into correct offset */
+                ssize_t status = write(fd, fromArray.ptr+totalBytesGot, totalBytesRequested-totalBytesGot);
+
+                if(status > 0)
+                {
+                    totalBytesGot += status;
+                }
+                else if(status == 0)
+                {
+                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status 0");
+                }
+                else
+                {
+                    throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
+                }
+            }
+
+            assert(totalBytesGot == totalBytesRequested);
+            return totalBytesGot;
+        }
+        else
+        {
+            pragma(msg, "FDStream: The writeFully() call is not implemented for your platform");
+            static assert(false);
+        }
     }
 
     /**
