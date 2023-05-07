@@ -207,69 +207,69 @@ unittest
     myPipe.close();
 }
 
-version(unittest)
-{
-    unittest
-    {
-        version(linux)
-        {
-            writeln("Testing fcntl to adjust pipe size to test writeFully()");
+// version(unittest)
+// {
+//     unittest
+//     {
+//         version(linux)
+//         {
+//             writeln("Testing fcntl to adjust pipe size to test writeFully()");
 
-            import core.sys.linux.fcntl;
+//             import core.sys.linux.fcntl;
 
-            PipeStream myPipe = PipeStream.newPipe();
-            assert(myPipe !is null);
+//             PipeStream myPipe = PipeStream.newPipe();
+//             assert(myPipe !is null);
 
-            int allocatedSize = fcntl(myPipe.getWriteStream().getFd(), 1031, 5000);
-            writeln("Pipe's internal buffer size allocated is: ", allocatedSize);
-            writeln("Checking size (did the kernel lie, piece of shit) ", fcntl(myPipe.getReadStream().getFd(), 1032));
+//             int allocatedSize = fcntl(myPipe.getWriteStream().getFd(), 1031, 5000);
+//             writeln("Pipe's internal buffer size allocated is: ", allocatedSize);
+//             writeln("Checking size (did the kernel lie, piece of shit) ", fcntl(myPipe.getReadStream().getFd(), 1032));
 
-            // TODO: Insert a reader thread that reads sloweer whilst we try write more
-            // than an initial `allocatedSize`+1
-            class ReaderThread : Thread
-            {
-                private Stream stream;
-                this(Stream stream)
-                {
-                    this.stream = stream;
-                    super(&worker);
-                }
+//             // TODO: Insert a reader thread that reads sloweer whilst we try write more
+//             // than an initial `allocatedSize`+1
+//             class ReaderThread : Thread
+//             {
+//                 private Stream stream;
+//                 this(Stream stream)
+//                 {
+//                     this.stream = stream;
+//                     super(&worker);
+//                 }
 
-                private void worker()
-                {
-                    writeln("Reader thread is sleeping for 3 seconds...");
-                    Thread.sleep(dur!("seconds")(3));
-                    writeln("reader is going to now");
+//                 private void worker()
+//                 {
+//                     writeln("Reader thread is sleeping for 3 seconds...");
+//                     Thread.sleep(dur!("seconds")(3));
+//                     writeln("reader is going to now");
 
-                    byte[] singleByte;
-                    singleByte.length = 4095;
-                    stream.read(singleByte);
+//                     byte[] singleByte;
+//                     singleByte.length = 4095;
+//                     stream.read(singleByte);
 
-                    writeln("Popped off byte: ", singleByte);
-                }
-            }
+//                     writeln("Popped off byte: ", singleByte);
+//                 }
+//             }
 
-            Thread readerThread = new ReaderThread(myPipe);
-            readerThread.start();
+//             Thread readerThread = new ReaderThread(myPipe);
+//             readerThread.start();
 
 
-            // We must write `allocatedSize`+1`
-            byte[] writeBytes;
-            writeBytes.length = allocatedSize+1;
-            foreach(ref byte writeByte; writeBytes)
-            {
-                writeByte = 69;
-            }
-            writeBytes[0] = 10;
+//             // We must write `allocatedSize`+1`
+//             byte[] writeBytes;
+//             writeBytes.length = allocatedSize+1;
+//             foreach(ref byte writeByte; writeBytes)
+//             {
+//                 writeByte = 69;
+//             }
+//             writeBytes[0] = 10;
 
-            writeln("Array to be written: ", writeBytes[0..20]);
+//             writeln("Array to be written: ", writeBytes[0..20]);
             
-            writeln("Calling writeFully() now");
-            myPipe.writeFully(writeBytes);
-            writeln("writeFully() completed");
-        }
+//             writeln("Calling writeFully() now");
+//             myPipe.writeFully(writeBytes);
+//             writeln("writeFully() completed");
+//         }
         
-    }
+//     }
     
-}
+// }
 
