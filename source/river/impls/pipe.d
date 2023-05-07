@@ -34,6 +34,26 @@ public class PipeStream : Stream
 	}
 
     /** 
+     * Gets the stream attached to the read-end of the pipe
+     *
+     * Returns: an `FDStream`
+     */
+    public FDStream getReadStream()
+    {
+        return readStream;
+    }
+
+    /** 
+     * Gets the stream attached to the write-end of the pipe
+     *
+     * Returns: an `FDStream`
+     */
+    public FDStream getWriteStream()
+    {
+        return writeStream;
+    }
+
+    /** 
      * Creates a new anonymous pipe and attaches it to a newly created
      * `PipeStream`
      *
@@ -118,6 +138,7 @@ public class PipeStream : Stream
 version(unittest)
 {
     import core.thread;
+    import std.stdio;
 }
 
 /**
@@ -177,13 +198,78 @@ unittest
     byte[] myReceivedData2;
     myReceivedData2.length = 4;
     cnt = myPipe.readFully(myReceivedData2);
-    import std.stdio;
     writeln(cnt);
     assert(cnt == 4);
-    import std.stdio;
     writeln(myReceivedData2);
     assert(myReceivedData2 == [42, 80, 99, 100] || myReceivedData2 == [80, 99, 100, 102]);
 
     // Close the stream
     myPipe.close();
 }
+
+version(unittest)
+{
+    unittest
+    {
+        version(linux)
+        {
+            writeln("Testing fcntl to adjust pipe size to test writeFully()");
+
+            import core.sys.linux.fcntl;
+
+            PipeStream myPipe = PipeStream.newPipe();
+            assert(myPipe !is null);
+
+            int allocatedSize = fcntl(myPipe.getWriteStream().getFd(), 1031, 5000);
+            writeln("Pipe's internal buffer size allocated is: ", allocatedSize);
+            writeln("Checking size (did the kernel lie, piece of shit) ", fcntl(myPipe.getReadStream().getFd(), 1032));
+
+            // TODO: Insert a reader thread that reads sloweer whilst we try write more
+            // than an initial `allocatedSize`+1
+            class ReaderThread : Thread
+            {
+                private Stream stream;
+                this(Stream stream)
+                {
+                    this.stream = stream;
+                    super(&worker);
+                }
+
+                private void worker()
+                {
+                    writeln("Reader thread is sleeping for 3 seconds...");
+                    Thread.sleep(dur!("seconds")(3));
+                    writeln("reader is going to now");
+
+                    byte[] singleByte;
+                    singleByte.length = 4095;
+                    stream.read(singleByte);
+
+                    writeln("Popped off byte: ", singleByte);
+                }
+            }
+
+            Thread readerThread = new ReaderThread(myPipe);
+            readerThread.start();
+
+
+            // We must write `allocatedSize`+1`
+            byte[] writeBytes;
+            writeBytes.length = allocatedSize+1;
+            foreach(ref byte writeByte; writeBytes)
+            {
+                writeByte = 69;
+            }
+            writeBytes[0] = 10;
+
+            writeln("Array to be written: ", writeBytes[0..20]);
+            
+            writeln("Calling writeFully() now");
+            myPipe.writeFully(writeBytes);
+            writeln("writeFully() completed");
+        }
+        
+    }
+    
+}
+
