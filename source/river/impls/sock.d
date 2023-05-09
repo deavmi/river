@@ -172,11 +172,6 @@ public class SockStream : Stream
         // If the message was correctly sent
         else
         {
-            // TODO: Ensure read count > 0 and count == toArray.length (full amount requested was read)
-            if(status == fromArray.length)
-            {
-
-            }
             return status;
         }
     }
