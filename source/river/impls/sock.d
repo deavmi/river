@@ -152,6 +152,10 @@ public class SockStream : Stream
      * Params:
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
+     *
+     * FIXME: This has failed in our unit tests for some reason
+     * it IS (by all means) a new method, so we should figure out
+     * why it is doing this
      */
     public override ulong writeFully(byte[] fromArray)
     {
