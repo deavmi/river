@@ -202,4 +202,14 @@ public class FDStream : Stream
             static assert(false);
         }
     }
+
+    /** 
+     * Retrieve the underlying file descriptor this stream is attached to
+     *
+     * Returns: the fd as an `int`
+     */
+    public final int getFd()
+    {
+        return fd;
+    }
 }
