@@ -246,17 +246,21 @@ unittest
 
         private void run()
         {
-            
+            /** 
+             * Accept the socket and create a `SockStream`
+             * from it to test out writing
+             */   
             Socket clientSocket = serverSocket.accept();
+            Stream clientStream = new SockStream(clientSocket);
 
             ubyte[] data = [69,255,21];
-            clientSocket.send(data);
+            clientStream.writeFully(cast(byte[])data);
 
 
             Thread.sleep(dur!("seconds")(2));
             // yield();
             data = [1,2,3,4,5,5,4,3,2,1];
-            clientSocket.send(data);
+            clientStream.writeFully(cast(byte[])data);
             
         }
     }
