@@ -89,8 +89,6 @@ public class SockStream : Stream
         openCheck();
 
         // Receive from the socket `toArray.length`
-        // TODO: recv can only read a certain number of max bytes, we should
-        // ... decide what to do in such a case
         ptrdiff_t status = socket.receive(toArray, cast(SocketFlags)MSG_WAITALL);
 
         // If the remote end closed the connection
@@ -107,11 +105,6 @@ public class SockStream : Stream
         // If the message was correctly received
         else
         {
-            // TODO: Ensure read count > 0 and count == toArray.length (full amount requested was read)
-            if(status == toArray.length)
-            {
-
-            }
             return status;
         }
     }
@@ -137,7 +130,6 @@ public class SockStream : Stream
         openCheck();
 
         // Write to the socket (at most `fromArray.length`)
-        // TODO: Implement me
         ptrdiff_t status = socket.send(fromArray);
 
         // On an error
@@ -167,13 +159,9 @@ public class SockStream : Stream
         openCheck();
 
         // Write to the socket `fromArray.length`
-        // TODO: send can only write a certain number of max bytes, we should
-        // ... decide what to do in such a case
         ptrdiff_t status = socket.send(fromArray, cast(SocketFlags)MSG_WAITALL);
 
-        // TODO: See is waitall even works, maybe it doesn't, we shall have to see,
-        // ... else use write calls and do what we do in readFully for fdstream for inspiration
-
+        // TODO: It doesn't look like MSG_WAITALL will work here
         
         // On an error
         if(status < 0)
