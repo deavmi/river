@@ -211,6 +211,7 @@ version(unittest)
     import core.thread;
     import std.file;
     import std.stdio : writeln;
+    import river.impls.sock;
 }
 
 /**
@@ -219,9 +220,6 @@ version(unittest)
  */
 unittest
 {
-    import river.impls.sock;
-
-    // FIXME: Make this randomnly generated
     string testDomainStr = "/tmp/riverTestUNIXSock.sock";
     UnixAddress testDomain = new UnixAddress(testDomainStr);
 
