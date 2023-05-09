@@ -158,22 +158,39 @@ public class SockStream : Stream
         // Ensure the stream is open
         openCheck();
 
-        // Write to the socket `fromArray.length`
-        ptrdiff_t status = socket.send(fromArray, cast(SocketFlags)MSG_WAITALL);
+        /** 
+         * TODO: It doesn't look like MSG_WAITALL will work here, hence we will
+         * ... need to do the below
+         *
+         * Perform a write till the number of bytes requested is fulfilled
+         */
+        long totalBytesRequested = fromArray.length;
+        long totalBytesGot = 0;
+        while(totalBytesGot < totalBytesRequested)
+        {
+            /* Write remaining bytes into correct offset */
+            ptrdiff_t status = socket.send(fromArray[0+totalBytesGot..totalBytesRequested]);
 
-        // TODO: It doesn't look like MSG_WAITALL will work here
+            // On successful write
+            if(status > 0)
+            {
+                totalBytesGot += status;
+            }
+            // On write error
+            else if(status == 0)
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status 0");
+            }
+            // On write error
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED, "Could not write, status <0");
+            }
+        }
+
+        assert(totalBytesGot == totalBytesRequested);
         
-        // On an error
-        if(status < 0)
-        {
-            // TODO: We should examine the error
-            throw new StreamException(StreamError.OPERATION_FAILED);
-        }
-        // If the message was correctly sent
-        else
-        {
-            return status;
-        }
+        return totalBytesGot;
     }
 
     /** 
