@@ -158,10 +158,6 @@ public class SockStream : Stream
      * Params:
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
-     *
-     * FIXME: This has failed in our unit tests for some reason
-     * it IS (by all means) a new method, so we should figure out
-     * why it is doing this
      */
     public override ulong writeFully(byte[] fromArray)
     {
@@ -169,10 +165,9 @@ public class SockStream : Stream
         openCheck();
 
         /** 
-         * TODO: It doesn't look like MSG_WAITALL will work here, hence we will
-         * ... need to do the below
-         *
-         * Perform a write till the number of bytes requested is fulfilled
+         * Perform a write till the number of bytes requested is fulfilled,
+         * we have to do it in this matter as it doesn't seem that MSG_WAITALL
+         * will work as done in `socket.receive()`
          */
         long totalBytesRequested = fromArray.length;
         long totalBytesGot = 0;
