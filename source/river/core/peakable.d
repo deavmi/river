@@ -1,3 +1,6 @@
+/** 
+ * Peak-supporting trait
+ */
 module river.core.peakable;
 
 /** 
