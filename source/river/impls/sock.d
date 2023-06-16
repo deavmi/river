@@ -381,7 +381,7 @@ unittest
 }
 
 /**
- * This tests the `Peeekable` capability of `SockStream`
+ * This tests the `Peekable` capability of `SockStream`
  */
 unittest
 {
