@@ -1,7 +1,7 @@
 /** 
- * Peak-supporting trait
+ * Peek-supporting trait
  */
-module river.core.peakable;
+module river.core.peekable;
 
 /** 
  * A stream which implements `Peakable` means that one
@@ -9,7 +9,7 @@ module river.core.peakable;
  * data requested into a buffer but without removing it
  * from the `Stream`'s underlying buffer
  */
-public interface Peakable
+public interface Peekable
 {
     /** 
      * Reads bytes from the stream into the provided array
@@ -24,8 +24,8 @@ public interface Peakable
      *   toArray = the buffer to read into
      * Returns: the number of bytes read 
      */
-    public ulong peak(byte[] toArray);
+    public ulong peek(byte[] toArray);
 
     // TODO: peakFully
-    public ulong peakFully(byte[] toArray);
+    public ulong peekFully(byte[] toArray);
 }

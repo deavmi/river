@@ -9,7 +9,7 @@ import std.socket;
 /** 
  * Provides a stream interface to a `Socket` which has 
  */
-public class SockStream : Stream, Peakable
+public class SockStream : Stream, Peekable
 {
     /** 
      * Underlying socket
@@ -223,7 +223,7 @@ public class SockStream : Stream, Peakable
      *   toArray = the buffer to read into
      * Returns: the number of bytes read 
      */
-    public override ulong peak(byte[] toArray)
+    public override ulong peek(byte[] toArray)
     {
         // Ensure the stream is open
         openCheck();
@@ -250,7 +250,7 @@ public class SockStream : Stream, Peakable
     }
 
     // TODO: Comment
-    public override ulong peakFully(byte[] toArray)
+    public override ulong peekFully(byte[] toArray)
     {
         // Ensure the stream is open
         openCheck();
@@ -447,7 +447,7 @@ unittest
 
     byte[] receivedData;
     receivedData.length = 4;
-    ulong cnt = (cast(Peakable)stream).peak(receivedData);
+    ulong cnt = (cast(Peekable)stream).peek(receivedData);
     writeln(cnt);
     writeln("peek (least): ", receivedData);
 
@@ -456,13 +456,13 @@ unittest
 
     /** 
      * By now we hope all the data we wanted has arrived
-     * FULLY and let's do a few `peak()`s then
+     * FULLY and let's do a few `peek()`s then
      */
     for(int i = 0; i < 2; i++)
     {
         byte[] receivedData2;
         receivedData2.length = 4;
-        cnt = (cast(Peakable)stream).peak(receivedData2);
+        cnt = (cast(Peekable)stream).peek(receivedData2);
         writeln(cnt);
         writeln("peek (least,arrivedFully): ", receivedData2);
     }

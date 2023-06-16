@@ -9,9 +9,9 @@ module river.core;
 public import river.core.stream : Stream;
 
 /** 
- * Peak-supporting trait
+ * Peek-supporting trait
  */
-public import river.core.peakable : Peakable;
+public import river.core.peekable : Peekable;
 
 /**
  * Error handling
