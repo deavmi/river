@@ -25,4 +25,7 @@ public interface Peakable
      * Returns: the number of bytes read 
      */
     public ulong peak(byte[] toArray);
+
+    // TODO: peakFully
+    public ulong peakFully(byte[] toArray);
 }
