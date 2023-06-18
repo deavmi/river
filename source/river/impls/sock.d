@@ -9,7 +9,7 @@ import std.socket;
 /** 
  * Provides a stream interface to a `Socket` which has 
  */
-public class SockStream : Stream
+public class SockStream : Stream, Peekable
 {
     /** 
      * Underlying socket
@@ -209,6 +209,72 @@ public class SockStream : Stream
         /* Closes the connection */
         socket.close();
     }
+
+    /** 
+     * Reads bytes from the stream into the provided array
+     * and returns without any further waiting, at most the
+     * number of bytes read will be the length of the provided
+     * array, at minimum a single byte.
+     *
+     * The underlying buffer of the `Stream` will not have
+     * said bytes removed from it however.
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read 
+     */
+    public override ulong peek(byte[] toArray)
+    {
+        // Ensure the stream is open
+        openCheck();
+
+        // Receive from the socket `toArray.length`
+        ptrdiff_t status = socket.receive(toArray, SocketFlags.PEEK);
+
+        // If the remote end closed the connection
+        if(status == 0)
+        {
+            throw new StreamException(StreamError.CLOSED);
+        }
+        // TODO: Handle like above, but some custom error message, then throw exception
+        else if(status < 0)
+        {
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
+        }
+        // If the message was correctly received
+        else
+        {
+            return status;
+        }
+    }
+
+    // TODO: Comment
+    public override ulong peekFully(byte[] toArray)
+    {
+        // Ensure the stream is open
+        openCheck();
+
+        // Receive from the socket `toArray.length`
+        ptrdiff_t status = socket.receive(toArray, SocketFlags.PEEK | cast(SocketFlags)MSG_WAITALL);
+
+        // If the remote end closed the connection
+        if(status == 0)
+        {
+            throw new StreamException(StreamError.CLOSED);
+        }
+        // TODO: Handle like above, but some custom error message, then throw exception
+        else if(status < 0)
+        {
+            // TODO: We should examine the error
+            throw new StreamException(StreamError.OPERATION_FAILED);
+        }
+        // If the message was correctly received
+        else
+        {
+            return status;
+        }
+    }
 }
 
 version(unittest)
@@ -281,7 +347,6 @@ unittest
             {
                 
             }
-            
         }
     }
 
@@ -311,7 +376,103 @@ unittest
     assert(cnt >= 1 && cnt <= 3);
     assert(receivedData2 == [21, 0, 0] || receivedData2 == [21, 1, 0] || receivedData2 == [21, 1, 2]);
 
-
     // Finally close the stream
     stream.close();
+}
+
+/**
+ * This tests the `Peekable` capability of `SockStream`
+ */
+unittest
+{
+    string testDomainStr = "/tmp/riverTestUNIXSock.sock";
+    UnixAddress testDomain = new UnixAddress(testDomainStr);
+
+    scope(exit)
+    {
+        // Remove the UNIX domain file, else we will get a problem
+        // ... creating it next time we run
+        remove(testDomainStr);
+    }
+
+    Socket server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+    server.bind(testDomain);
+    server.listen(0);
+    
+    class ServerThread : Thread
+    {
+        private Socket serverSocket;
+
+        this(Socket serverSocket)
+        {
+            super(&run);
+            this.serverSocket = serverSocket;
+        }
+
+        private void run()
+        {
+            /** 
+             * Accept the socket and create a `SockStream`
+             * from it to test out writing
+             */   
+            Socket clientSocket = serverSocket.accept();
+            Stream clientStream = new SockStream(clientSocket);
+
+           
+            try
+            {
+                ubyte[] data = [65];
+                clientStream.writeFully(cast(byte[])data);
+
+                Thread.sleep(dur!("seconds")(2));
+
+                data = [66, 66, 65];
+                clientStream.writeFully(cast(byte[])data);
+            }
+            catch(StreamException e)
+            {
+
+            }
+            
+        }
+    }
+
+    Thread serverThread = new ServerThread(server);
+    serverThread.start();
+
+    Socket clientConnection = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+    clientConnection.connect(testDomain);
+
+    Stream stream = new SockStream(clientConnection);
+
+    byte[] receivedData;
+    receivedData.length = 4;
+    ulong cnt = (cast(Peekable)stream).peek(receivedData);
+    writeln(cnt);
+    writeln("peek (least): ", receivedData);
+
+    // Give the server some time to send the [66, 66, 65]
+    Thread.sleep(dur!("seconds")(3));
+
+    /** 
+     * By now we hope all the data we wanted has arrived
+     * FULLY and let's do a few `peek()`s then
+     */
+    for(int i = 0; i < 2; i++)
+    {
+        byte[] receivedData2;
+        receivedData2.length = 4;
+        cnt = (cast(Peekable)stream).peek(receivedData2);
+        writeln(cnt);
+        writeln("peek (least,arrivedFully): ", receivedData2);
+    }
+    
+    /** 
+     * Now let's dequeue it all
+     */
+    byte[] receivedData3;
+    receivedData3.length = 4;
+    cnt = stream.readFully(receivedData3);
+    writeln(cnt);
+    writeln("read (fully): ", receivedData3);
 }
