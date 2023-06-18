@@ -26,6 +26,16 @@ public interface Peekable
      */
     public ulong peek(byte[] toArray);
 
-    // TODO: peakFully
+    /** 
+     * Reads bytes from the stream into the provided array
+     * until the array is fully-filled
+     *
+     * The underlying buffer of the `Stream` will not have
+     * said bytes removed from it however.
+     *
+     * Params:
+     *   toArray = the buffer to read into
+     * Returns: the number of bytes read
+     */
     public ulong peekFully(byte[] toArray);
 }
