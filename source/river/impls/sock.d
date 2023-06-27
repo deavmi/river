@@ -69,6 +69,7 @@ public class SockStream : Stream
             throw new StreamException(StreamError.CLOSED);
         }
         // On error
+        // TODO: I don't know if this handling is right yet - IS Socket.ERROR same as errno?
         else if(status < 0)
         {
             // Check for `EINTR` and specifically throw `InterruptedException`
@@ -122,6 +123,7 @@ public class SockStream : Stream
             throw new StreamException(StreamError.CLOSED);
         }
         // On error
+        // TODO: I don't know if this handling is right yet - IS Socket.ERROR same as errno?
         else if(status < 0)
         {
             // Check for `EINTR` and specifically throw `InterruptedException`
@@ -168,8 +170,17 @@ public class SockStream : Stream
         // On an error
         if(status < 0)
         {
-            // TODO: We should examine the error
-            throw new StreamException(StreamError.OPERATION_FAILED);
+            // TODO: I don't know if this handling is right yet - IS Socket.ERROR same as errno?
+            // Check for `EINTR` and specifically throw `InterruptedException`
+            if(status == EINTR)
+            {
+                throw new InterruptedException();
+            }
+            // Else, it's a fatal error
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED);
+            }
         }
         // If the message was correctly sent
         else
@@ -338,6 +349,86 @@ unittest
     assert(cnt >= 1 && cnt <= 3);
     assert(receivedData2 == [21, 0, 0] || receivedData2 == [21, 1, 0] || receivedData2 == [21, 1, 2]);
 
+
+    // Finally close the stream
+    stream.close();
+}
+
+/**
+ * Tests using `read(ref byte[])` and `readFully(ref byte[])`
+ * on a `SockStream` but here we actually are just testing
+ * what heppens on an error on the remote host and how
+ * that affects us.
+ *
+ * We should have a `StreamException` thrown with a `StreamError`
+ * of `StreamError.CLOSED`.
+ */
+unittest
+{
+    string testDomainStr = "/tmp/riverTestUNIXSock.sock";
+    UnixAddress testDomain = new UnixAddress(testDomainStr);
+
+    scope(exit)
+    {
+        // Remove the UNIX domain file, else we will get a problem
+        // ... creating it next time we run
+        remove(testDomainStr);
+    }
+
+    Socket server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+    server.bind(testDomain);
+    server.listen(0);
+    
+    class ServerThread : Thread
+    {
+        private Socket serverSocket;
+
+        this(Socket serverSocket)
+        {
+            super(&run);
+            this.serverSocket = serverSocket;
+        }
+
+        private void run()
+        {
+            /** 
+             * Accept the socket and create a `SockStream`
+             * from it to test out writing
+             */   
+            Socket clientSocket = serverSocket.accept();
+            Stream clientStream = new SockStream(clientSocket);
+
+            // Close immediately
+            clientStream.close();
+        }
+    }
+
+    Thread serverThread = new ServerThread(server);
+    serverThread.start();
+
+    Socket clientConnection = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+    clientConnection.connect(testDomain);
+
+    Stream stream = new SockStream(clientConnection);
+
+    /** 
+     * Attempt to receive but we should get an exception
+     * thrown about the connection being closed.
+     *
+     * Therefore we should have a `StreamException` throen
+     * and the `StreamError` should be `CLOSED`
+     */
+    try
+    {
+        byte[] receivedData;
+        receivedData.length = 2;
+        stream.readFully(receivedData);
+        assert(false);
+    }
+    catch(StreamException e)
+    {
+        assert(e.getError() == StreamError.CLOSED);
+    }
 
     // Finally close the stream
     stream.close();
