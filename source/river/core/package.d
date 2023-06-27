@@ -11,4 +11,4 @@ public import river.core.stream : Stream;
 /**
  * Error handling
  */
-public import river.core.exceptions : StreamException, StreamError;
+public import river.core.exceptions;

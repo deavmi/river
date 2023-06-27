@@ -18,6 +18,11 @@ public interface Stream
      * Params:
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public ulong read(byte[] toArray);
 
@@ -28,6 +33,11 @@ public interface Stream
      * Params:
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public ulong readFully(byte[] toArray);
 
