@@ -5,6 +5,7 @@ module river.impls.sock;
 
 import river.core;
 import std.socket;
+import core.stdc.errno : EINTR;
 
 /** 
  * Provides a stream interface to a `Socket` which has 
@@ -48,6 +49,11 @@ public class SockStream : Stream
      * Params:
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public override ulong read(byte[] toArray)
     {
@@ -62,11 +68,19 @@ public class SockStream : Stream
         {
             throw new StreamException(StreamError.CLOSED);
         }
-        // TODO: Handle like above, but some custom error message, then throw exception
+        // On error
         else if(status < 0)
         {
-            // TODO: We should examine the error
-            throw new StreamException(StreamError.OPERATION_FAILED);
+            // Check for `EINTR` and specifically throw `InterruptedException`
+            if(status == EINTR)
+            {
+                throw new InterruptedException();
+            }
+            // Else, it's a fatal error
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED);
+            }
         }
         // If the message was correctly received
         else
@@ -88,6 +102,11 @@ public class SockStream : Stream
      * Params:
      *   toArray = the buffer to read into
      * Returns: the number of bytes read
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public override ulong readFully(byte[] toArray)
     {
@@ -102,11 +121,19 @@ public class SockStream : Stream
         {
             throw new StreamException(StreamError.CLOSED);
         }
-        // TODO: Handle like above, but some custom error message, then throw exception
+        // On error
         else if(status < 0)
         {
-            // TODO: We should examine the error
-            throw new StreamException(StreamError.OPERATION_FAILED);
+            // Check for `EINTR` and specifically throw `InterruptedException`
+            if(status == EINTR)
+            {
+                throw new InterruptedException();
+            }
+            // Else, it's a fatal error
+            else
+            {
+                throw new StreamException(StreamError.OPERATION_FAILED);
+            }
         }
         // If the message was correctly received
         else
