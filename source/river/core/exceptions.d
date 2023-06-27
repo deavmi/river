@@ -24,11 +24,6 @@ public enum StreamError
      * On a failed operation, can be `read`, `write` etc.
      */
     OPERATION_FAILED,
-
-    /** 
-     * If we were interrupted whilst blocking
-     */
-    INTERRUPTED
 }
 
 /** 
@@ -63,5 +58,13 @@ public class StreamException : Exception
     public StreamError getError()
     {
         return error;
+    }
+}
+
+public final class InterruptedException : StreamException
+{
+    this()
+    {
+        super(StreamError.OPERATION_FAILED, "We were interrupted");
     }
 }
