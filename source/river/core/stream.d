@@ -50,6 +50,11 @@ public interface Stream
      * Params:
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public ulong write(byte[] fromArray);
 
@@ -60,6 +65,11 @@ public interface Stream
      * Params:
      *   fromArray = the buffer to write from
      * Returns: the number of bytes written
+     * Throws:
+     *   `InterruptedException` if interrupted whilst doing
+     * operation
+     * Throws:
+     *   `StreamException` on general error
      */
     public ulong writeFully(byte[] fromArray);
 
