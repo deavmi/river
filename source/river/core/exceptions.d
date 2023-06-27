@@ -23,7 +23,12 @@ public enum StreamError
     /** 
      * On a failed operation, can be `read`, `write` etc.
      */
-    OPERATION_FAILED
+    OPERATION_FAILED,
+
+    /** 
+     * If we were interrupted whilst blocking
+     */
+    INTERRUPTED
 }
 
 /** 
